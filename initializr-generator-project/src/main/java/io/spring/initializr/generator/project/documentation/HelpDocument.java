@@ -16,9 +16,15 @@
 
 package io.spring.initializr.generator.project.documentation;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import io.spring.initializr.generator.Link;
 
@@ -30,42 +36,73 @@ import io.spring.initializr.generator.Link;
  */
 public class HelpDocument {
 
-	private final List<String> generalEntries = new ArrayList<>();
-
 	private final List<Link> links = new ArrayList<>();
+
+	private final List<RequiredDependency> requiredDependencies = new ArrayList<>();
+
+	private final List<SupportingInfrastructureElement> infrastructureElements = new ArrayList<>();
 
 	private final LinkedList<Section> sections = new LinkedList<>();
 
-	public HelpDocument generalEntry(String entry) {
-		this.generalEntries.add(entry);
-		return this;
-	}
-
-	public HelpDocument link(Link link) {
+	public HelpDocument addLink(Link link) {
 		this.links.add(link);
 		return this;
 	}
 
-	public HelpDocument section(Section section) {
+	public HelpDocument addSection(Section section) {
 		this.sections.add(section);
 		return this;
 	}
 
-	public boolean isEmpty() {
-		return this.generalEntries.isEmpty() && this.links.isEmpty()
-				&& this.sections.isEmpty();
+	public HelpDocument addRequiredDependency(RequiredDependency dependency) {
+		this.requiredDependencies.add(dependency);
+		return this;
 	}
 
-	public List<String> getGeneralEntries() {
-		return this.generalEntries;
-	}
-
-	public List<Link> getLinks() {
-		return this.links;
+	public HelpDocument addSupportingInfrastructureElement(
+			SupportingInfrastructureElement element) {
+		this.infrastructureElements.add(element);
+		return this;
 	}
 
 	public LinkedList<Section> getSections() {
 		return this.sections;
+	}
+
+	public void write(PrintWriter writer) throws IOException {
+		writeGettingStartedSection(writer);
+		for (Section section : this.sections) {
+			section.write(writer);
+		}
+	}
+
+	private void writeGettingStartedSection(PrintWriter writer) throws IOException {
+		if (this.links.isEmpty() && this.infrastructureElements.isEmpty()
+				&& this.requiredDependencies.isEmpty()) {
+			return;
+		}
+		Map<String, Object> model = new HashMap<>();
+		List<Link> referenceLinks = this.links.stream()
+				.filter((link) -> "reference".equals(link.getRel()))
+				.collect(Collectors.toList());
+		List<Link> guideLinks = this.links.stream()
+				.filter((link) -> "guide".equals(link.getRel()))
+				.collect(Collectors.toList());
+		List<Link> otherLinks = this.links.stream().filter(
+				(link) -> !referenceLinks.contains(link) && !guideLinks.contains(link))
+				.collect(Collectors.toList());
+		add(model, "referenceLinks", referenceLinks);
+		add(model, "guideLinks", guideLinks);
+		add(model, "otherLinks", otherLinks);
+		add(model, "supportingInfrastructure", this.infrastructureElements);
+		add(model, "requiredDependencies", this.requiredDependencies);
+		Section section = new MustacheSection("getting-started", model);
+		section.write(writer);
+	}
+
+	private void add(Map<String, Object> model, String name, Collection<?> value) {
+		model.put(name, value);
+		model.put(name + "Present", !value.isEmpty());
 	}
 
 }

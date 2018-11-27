@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.spring.initializr.generator.project.documentation;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * Define the section of a document.
+ * A representation of something that can write itself.
  *
- * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
-public interface Section {
+public interface Writable {
 
 	void write(PrintWriter writer) throws IOException;
+
 }
