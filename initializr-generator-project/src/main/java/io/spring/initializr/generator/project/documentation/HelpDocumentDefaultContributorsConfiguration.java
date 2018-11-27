@@ -16,7 +16,12 @@
 
 package io.spring.initializr.generator.project.documentation;
 
+import java.util.List;
+
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.project.documentation.gettingstarted.GettingStartedContributor;
+import io.spring.initializr.generator.project.documentation.gettingstarted.GettingStartedHelpDocumentCustomizer;
+import io.spring.initializr.generator.project.documentation.gettingstarted.LinksContributor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,9 +35,14 @@ import org.springframework.context.annotation.Configuration;
 class HelpDocumentDefaultContributorsConfiguration {
 
 	@Bean
-	public ProjectDescriptionHelpDocumentCustomizer projectDescriptionHelpDocumentCustomizer(
-			ProjectDescription description) {
-		return new ProjectDescriptionHelpDocumentCustomizer(description);
+	public GettingStartedContributor linksContributor(ProjectDescription description) {
+		return new LinksContributor(description);
+	}
+
+	@Bean
+	public GettingStartedHelpDocumentCustomizer customizer(
+			List<GettingStartedContributor> contributors) {
+		return new GettingStartedHelpDocumentCustomizer(contributors);
 	}
 
 }

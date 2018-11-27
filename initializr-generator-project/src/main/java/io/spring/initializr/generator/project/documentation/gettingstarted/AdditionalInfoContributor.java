@@ -14,26 +14,16 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project.documentation;
-
-import java.io.IOException;
-
-import io.spring.initializr.generator.util.template.TemplateRenderer;
+package io.spring.initializr.generator.project.documentation.gettingstarted;
 
 /**
- * Define the section of a document.
- *
- * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
-@FunctionalInterface
-public interface Section {
+public class AdditionalInfoContributor implements GettingStartedContributor {
 
-	/**
-	 * Return the section text using the specified {@link TemplateRenderer}.
-	 * @param renderer the renderer to use
-	 * @return the rendered section
-	 * @throws IOException if rendering the section failed
-	 */
-	String getText(TemplateRenderer renderer) throws IOException;
+	@Override
+	public void contribute(GettingStarted.Builder builder) {
+
+	}
 
 }
