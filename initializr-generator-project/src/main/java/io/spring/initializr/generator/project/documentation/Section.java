@@ -20,11 +20,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * Define the section of a document.
+ * Define the section of a document that knows how to write itself.
  *
  * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
 public interface Section {
 
 	void write(PrintWriter writer) throws IOException;
+
 }

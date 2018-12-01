@@ -28,24 +28,19 @@ import io.spring.initializr.generator.util.template.TemplateRenderer;
  *
  * @author Madhura Bhave
  */
-public class MustacheSection implements Section {
-
-	private final String templateName;
-
-	private final Map<String, Object> model;
+public abstract class MustacheSection implements Section {
 
 	private final TemplateRenderer renderer = new MustacheTemplateRenderer(
 			"classpath:/documentation/help");
 
-	public MustacheSection(String templateName, Map<String, Object> model) {
-		this.templateName = templateName;
-		this.model = model;
-	}
-
 	@Override
 	public void write(PrintWriter writer) throws IOException {
-		writer.println(this.renderer.render(this.templateName, this.model));
+		writer.println(this.renderer.render(getTemplateName(), getModel()));
 		// writer.println();
 	}
+
+	public abstract String getTemplateName();
+
+	public abstract Map<String, Object> getModel();
 
 }

@@ -13,18 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.spring.initializr.generator.project.documentation;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+package io.spring.start.extension.actuator;
+
+import io.spring.initializr.generator.condition.ConditionalOnDependency;
+import io.spring.initializr.generator.project.ProjectGenerationConfiguration;
+
+import org.springframework.context.annotation.Bean;
 
 /**
- * A representation of something that can write itself.
+ * Configuration for generation of projects that depend on actuator.
  *
  * @author Madhura Bhave
  */
-public interface Writable {
+@ProjectGenerationConfiguration
+@ConditionalOnDependency(groupId = "org.springframework.boot", artifactId = "spring-boot-starter-actuator")
+public class ActuatorProjectGenerationConfiguration {
 
-	void write(PrintWriter writer) throws IOException;
+	@Bean
+	public MicrometerHelpDocumentCustomizer micrometerHelpDocumentCustomizer() {
+		return new MicrometerHelpDocumentCustomizer();
+	}
 
 }

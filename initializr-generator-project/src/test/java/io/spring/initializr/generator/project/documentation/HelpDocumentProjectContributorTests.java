@@ -83,7 +83,8 @@ class HelpDocumentProjectContributorTests {
 		HelpDocument document = new HelpDocument();
 		document.addLink(link("other", "https://test.example.com", "Something"));
 		List<String> lines = generateDocument(document);
-		assertThat(lines).containsExactly("# Getting Started", "", "### Additional Links",
+		assertThat(lines).containsExactly("# Getting Started", "",
+				"### Additional LinksSection",
 				"These additional references should also help you:", "",
 				"* [Something](https://test.example.com)", "");
 	}
