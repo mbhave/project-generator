@@ -16,7 +16,10 @@
 
 package io.spring.initializr.generator.project;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,6 +44,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
+
+import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -115,7 +120,10 @@ class ProjectGeneratorTests {
 		Path project = this.projectGenerator.generate(description);
 		List<String> relativePaths = getRelativePathsOfProjectFiles(project);
 		assertThat(relativePaths).contains("build.gradle");
-		List<String> lines = Files.readAllLines(project.resolve("build.gradle"));
+		Path path = project.resolve("build.gradle");
+		String content = StreamUtils.copyToString(
+				new FileInputStream(new File(path.toString())), Charset.forName("UTF-8"));
+		String[] lines = content.split("\n");
 		assertThat(lines).containsExactly("plugins {",
 				"    id 'org.springframework.boot' version '2.1.0.RELEASE'",
 				"    id 'java'", "}", "",
@@ -124,7 +132,7 @@ class ProjectGeneratorTests {
 				"sourceCompatibility = '11'", "", "repositories {", "    mavenCentral()",
 				"}", "", "dependencies {", "    implementation 'com.example:acme'",
 				"    testImplementation 'org.springframework.boot:spring-boot-starter-test'",
-				"}", "");
+				"}");
 	}
 
 	@Test
