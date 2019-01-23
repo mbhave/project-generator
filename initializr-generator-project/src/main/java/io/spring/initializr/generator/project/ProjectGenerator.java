@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 import io.spring.initializr.generator.ProjectContributor;
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ProjectDescriptionResolver;
 import io.spring.initializr.generator.ResolvedProjectDescription;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -62,10 +63,12 @@ public class ProjectGenerator {
 	 */
 	public Path generate(ProjectDescription description) throws IOException {
 		return generate(description, (context) -> {
+			ResolvedProjectDescription projectDescription = context
+					.getBean(ResolvedProjectDescription.class);
 			Path projectRoot = context.getBean(ProjectDirectoryFactory.class)
-					.createProjectDirectory(context.getProjectDescription());
+					.createProjectDirectory(projectDescription);
 			Path projectDirectory = initializerProjectDirectory(projectRoot,
-					context.getProjectDescription());
+					projectDescription);
 			context.getBean(ProjectContributors.class).contribute(projectDirectory);
 			return projectRoot;
 		});
@@ -84,11 +87,15 @@ public class ProjectGenerator {
 	public <T> T generate(ProjectDescription description,
 			ProjectGenerationContextProcessor<T> projectGenerationContext)
 			throws IOException {
-		ResolvedProjectDescription resolvedProjectDescription = description.resolve();
-		try (ProjectGenerationContext context = new ProjectGenerationContext(
-				resolvedProjectDescription)) {
+		try (ProjectGenerationContext context = new ProjectGenerationContext()) {
 			context.register(CoreConfiguration.class);
 			this.projectGenerationContext.accept(context);
+			ProjectDescriptionResolver resolver = context.getParent()
+					.getBean(ProjectDescriptionResolver.class);
+			ResolvedProjectDescription resolvedProjectDescription = resolver
+					.resolve(description);
+			context.registerBean(ResolvedProjectDescription.class,
+					() -> resolvedProjectDescription);
 			context.refresh();
 			return projectGenerationContext.process(context);
 		}

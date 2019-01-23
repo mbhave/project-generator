@@ -23,10 +23,12 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
 import io.spring.initializr.generator.ProjectDescription;
+import io.spring.initializr.generator.ProjectDescriptionResolver;
 import io.spring.initializr.generator.buildsystem.gradle.GradleBuildSystem;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuild;
 import io.spring.initializr.generator.buildsystem.maven.MavenBuildSystem;
@@ -39,6 +41,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
 import org.junitpioneer.jupiter.TempDirectory.TempDir;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -60,6 +64,11 @@ class ProjectGeneratorTests {
 			projectGenerationContext.registerBean(ProjectDirectoryFactory.class,
 					() -> (description) -> Files.createTempDirectory(directory,
 							"project-"));
+			AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext();
+			parent.registerBean(ProjectDescriptionResolver.class,
+					() -> new ProjectDescriptionResolver(Collections.emptyList()));
+			parent.refresh();
+			projectGenerationContext.setParent(parent);
 		});
 	}
 

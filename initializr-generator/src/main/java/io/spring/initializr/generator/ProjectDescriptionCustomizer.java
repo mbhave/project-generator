@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package io.spring.initializr.generator.project;
-
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+package io.spring.initializr.generator;
 
 /**
- * Provide configuration and infrastructure to generate a project.
+ * Callback interface for customizing a {@link ProjectDescription}.
  *
- * @author Stephane Nicoll
+ * @author Madhura Bhave
  */
-public class ProjectGenerationContext extends AnnotationConfigApplicationContext {
+@FunctionalInterface
+public interface ProjectDescriptionCustomizer {
+
+	void customize(ProjectDescription description);
 
 }
